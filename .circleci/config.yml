@@ -61,7 +61,8 @@ jobs:
           name: Back-end build
           command: |
             cd backend
-            tsc
+            npm install
+            npm tsc
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
