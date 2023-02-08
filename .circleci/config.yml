@@ -149,14 +149,14 @@ jobs:
       - run:
         name: create inventory file
         command: |
-        touch inventory.txt
-        echo -e "[all]\n" > inventory 
+          touch inventory.txt
+          echo -e "[all]\n" > inventory 
       - run:
         name: get DNS name
         command: | 
-        aws ec2 describe-instances \
-        --query 'Reservations[*].Instances[*].PublicDnsName' \
-        --output text >> inventory
+          aws ec2 describe-instances \
+          --query 'Reservations[*].Instances[*].PublicDnsName' \
+          --output text >> inventory
 
 workflows:
   default:
