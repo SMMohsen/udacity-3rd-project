@@ -10,7 +10,6 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            # Your code here
             exit 1
 
   revert-migrations:
@@ -156,7 +155,10 @@ jobs:
         command: | 
           aws ec2 describe-instances \
           --query 'Reservations[*].Instances[*].PublicDnsName' \
-          --output text >> inventory
+          --output text >> inventory.txt
+      - run:
+        name: destory infra
+        command: destroy-environment
 
 workflows:
   default:
