@@ -130,35 +130,35 @@ jobs:
     steps:
       - checkout
       - run: 
-        name: create backend infra
-        command: |
-          aws cloudformation deploy \
-          --template-file .circleci/files/backend.yml \
-          --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-          --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-          --tags project=udapeople
+          name: create backend infra
+          command: |
+            aws cloudformation deploy \
+            --template-file .circleci/files/backend.yml \
+            --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+            --tags project=udapeople
       - run: 
-        name: create fromtend infra
-        command: |
-          aws cloudformation deploy \
-          --template-file .circleci/files/fromtend.yml \
-          --stack-name "udapeople-fromtend-${CIRCLE_WORKFLOW_ID:0:7}" \
-          --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
-          --tags project=udapeople
+          name: create fromtend infra
+          command: |
+           aws cloudformation deploy \
+            --template-file .circleci/files/fromtend.yml \
+            --stack-name "udapeople-fromtend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
+            --tags project=udapeople
       - run:
-        name: create inventory file
-        command: |
-          touch inventory.txt
-          echo -e "[all]\n" > inventory 
+          name: create inventory file
+          command: |
+            touch inventory.txt
+            echo -e "[all]\n" > inventory 
       - run:
-        name: get DNS name
-        command: | 
-          aws ec2 describe-instances \
-          --query 'Reservations[*].Instances[*].PublicDnsName' \
-          --output text >> inventory.txt
+          name: get DNS name
+          command: | 
+            aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicDnsName' \
+            --output text >> inventory.txt
       - run:
-        name: destory infra
-        command: destroy-environment
+          name: destory infra
+          command: destroy-environment
 
 workflows:
   default:
@@ -171,7 +171,4 @@ workflows:
       - test-backend:
           requires:
             - build-backend
-      - deploy-infrastructure:
-        requires: 
-          - test-frontend
-          - test-backend
+      - deploy-infrastructure
