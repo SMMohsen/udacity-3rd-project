@@ -152,7 +152,7 @@ jobs:
       - run:
           name: create inventory file
           command: |
-            touch inventory.txt
+            touch /tmp/inventory.txt
             echo -e "[all]\n" > inventory 
       - run:
           name: get DNS name
