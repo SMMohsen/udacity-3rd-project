@@ -160,6 +160,23 @@ jobs:
           root: /tmp
           paths:
             - inventory.txt
+    
+    configure-infrastructure:
+      docker:
+        - image: ansible/ansible
+      steps:
+        - checkout
+        - add_ssh_keys:
+            fingerprints: ["18:74:5a:f8:bd:1c:e0:44:33:96:3b:30:02:96:78:ed"]
+        - attach_workspace:
+            at: /tmp
+        - run:
+          name: run anisble playbook
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i /tmp/inventory.txt configure-server.yml
+        
+         
 
 workflows:
   default:
@@ -173,3 +190,6 @@ workflows:
           requires:
             - build-backend
       - deploy-infrastructure
+      - configure-infrastructure:
+        requires:
+          - deploy-infrastructure
