@@ -160,6 +160,7 @@ jobs:
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicDnsName' \
             --output text >> /tmp/inventory.txt
+            cat /tmp/inventory.txt
       - persist_to_workspace:
           root: /tmp
           paths:
