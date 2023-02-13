@@ -181,6 +181,66 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i /tmp/inventory.txt configure-server.yml
+
+  run-migrations:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+        name: Run migrations
+        command: |
+          cd backend
+          npm install
+          # Run and save the migration output
+          npm run migrations > migrations_dump.txt
+      - run:
+          name: Send migration status to kvdb.io
+          command: |   
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            then
+            # If you are using kvdb.io, generate the bucket ID "3zmhpmT3JBLitS6uzdVdFV" in your local terminal first
+            curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+            fi
+
+  deploy-frontend:
+    docker:
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - run:
+        name: install python
+        command: |
+          sudo apt install python3.9
+          python3.9 --version
+      - run:
+        name: install node
+        command: |
+          sudo apt-get install curl
+          curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - &&\
+          sudo apt-get install nodejs
+          node -v 
+      - run: 
+          name: get backend url
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' )
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
+            cat frontend/.env
+      - run:
+        name: deploy frontend
+        command: |
+          cd frontend
+          npm install
+          npm run build
+          tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+          aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+
+  
+
         
          
 
