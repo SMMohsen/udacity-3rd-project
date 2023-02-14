@@ -224,7 +224,7 @@ jobs:
       - run:
           name: install node
           command: |
-            sudo apt-get install curl
+            apt-get install curl
             curl -fsSL https://deb.nodesource.com/setup_16.x | -E bash - &&\
             apt-get install nodejs
             node -v
@@ -247,6 +247,8 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
   
   deploy-backend:
      docker:
@@ -280,6 +282,11 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat /tmp/inventory.txt
             ansible-playbook -i /tmp/inventory.txt deploy-backend.yml
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
+
   smoke-test:
     docker:
       - image: python:3.7-alpine3.11
@@ -316,6 +323,10 @@ jobs:
             else
               return 1
             fi
+      - revert-migrations:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
+      - destroy-environment:
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7} 
 
       
 
@@ -350,7 +361,7 @@ workflows:
             - configure-infrastructure
       - deploy-frontend:
           requires:
-            - deploy-infrastructure
+            - configure-infrastructure
       - deploy-backend:
           requires:
             - configure-infrastructure
