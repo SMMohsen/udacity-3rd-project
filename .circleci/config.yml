@@ -225,8 +225,8 @@ jobs:
           name: install node
           command: |
             sudo apt-get install curl
-            curl -fsSL https://deb.nodesource.com/setup_16.x | sudo -E bash - &&\
-            sudo apt-get install nodejs
+            curl -fsSL https://deb.nodesource.com/setup_16.x | -E bash - &&\
+            apt-get install nodejs
             node -v
       - run:
           name: install awscli
@@ -280,6 +280,44 @@ jobs:
             echo "Contents  of the inventory.txt file is -------"
             cat /tmp/inventory.txt
             ansible-playbook -i /tmp/inventory.txt deploy-backend.yml
+  smoke-test:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - run:
+          name: Install dependencies
+          command: |
+            apk add curl
+            apk add --upgrade bash
+            apk add --update ansible
+            apk add openssh-client
+            pip3 install awscli
+            apk add --update nodejs npm
+      - run:
+          name: run backend test
+          command: | 
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                return 0
+            else
+                return 1
+            fi
+      - run:
+          name: run frontend test
+          command: |
+            URL="http://udapeople-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-east-1.amazonaws.com/#/employees"            
+            echo ${URL} 
+            if curl -s ${URL} | grep "Welcome"
+            then
+                # Change this to 0 after the job fails
+              return 1
+            else
+              return 1
+            fi
+
+      
 
   
 
@@ -316,3 +354,7 @@ workflows:
       - deploy-backend:
           requires:
             - configure-infrastructure
+      - smoke-test:
+        requires:
+          - deploy-backend
+          - deploy-frontend
