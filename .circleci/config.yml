@@ -173,6 +173,9 @@ jobs:
       - checkout
       - attach_workspace:
           at: /tmp
+      - add_ssh_keys:
+          fingerprints: 
+            - 90:50:da:a8:28:a1:b8:03:1c:a0:29:e2:8a:c9:40:21
       - run:
           name: check ansible version
           command: ansible --version
