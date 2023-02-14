@@ -183,7 +183,7 @@ jobs:
           name: run anisble playbook
           command: | 
             cd .circleci/ansible
-            ansible-playbook -i /tmp/inventory.txt configure-server.yml
+            ansible-playbook -i /tmp/inventory.txt -vvvv configure-server.yml
 
   run-migrations:
     docker:
