@@ -219,6 +219,8 @@ jobs:
       - image: sleavely/node-awscli:14.x
     steps:
       - checkout
+      - attach_workspace:
+          at: /root
       - run: 
           name: get backend url
           command: |
