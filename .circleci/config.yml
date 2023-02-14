@@ -25,8 +25,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            # Curl command here to see if there was a successful migration associated with the workflow id, store result in SUCCESS variable
-            SUCCESS = 1
+            SUCCESS=$(curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/migration_<< parameters.workflow_id >>)
             if(( $SUCCESS==1 )); 
             then
             cd ~/project/backend
@@ -220,21 +219,24 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - attach_workspace:
           at: /tmp
       - run:
-          name: install node
-          command: |
-            apt-get install curl
-            curl -fsSL https://deb.nodesource.com/setup_16.x | -E bash - &&\
-            apt-get install nodejs
-            node -v
-      - run:
           name: install awscli
-          command: pip3 install awscli
+          command: |
+            apt-get update && \
+            apt-get install -y \
+                python3 \
+                python3-pip \
+                python3-setuptools \
+                groff \
+                less \
+            && pip3 install --upgrade pip \
+            && apt-get clean
+            pip3 --no-cache-dir install --upgrade awscli
       - run: 
           name: get backend url
           command: |
