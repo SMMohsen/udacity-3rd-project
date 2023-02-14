@@ -216,24 +216,11 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: sleavely/node-awscli:14.x
     steps:
       - checkout
       - attach_workspace:
           at: /tmp
-      - run:
-          name: install awscli
-          command: |
-            apt-get update && \
-            apt-get install -y \
-                python3 \
-                python3-pip \
-                python3-setuptools \
-                groff \
-                less \
-            && pip3 install --upgrade pip \
-            && apt-get clean
-            pip3 --no-cache-dir install --upgrade awscli
       - run: 
           name: get backend url
           command: |
@@ -355,7 +342,10 @@ workflows:
       - scan-frontend:
           requires:
             - build-frontend
-      - deploy-infrastructure
+      - deploy-infrastructure:
+          requires:
+            - scan-backend
+            - scan-frontend
       - configure-infrastructure:
           requires:
             - deploy-infrastructure
