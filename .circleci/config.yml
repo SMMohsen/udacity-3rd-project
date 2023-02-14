@@ -246,6 +246,38 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+  
+  deploy-backend:
+     docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - attach_workspace:
+          at: /tmp
+      - add_ssh_keys:
+          fingerprints: 
+            - 90:50:da:a8:28:a1:b8:03:1c:a0:29:e2:8a:c9:40:21
+      - run:
+            name: Install dependencies
+            command: |
+              apk add curl
+              apk add --upgrade bash
+              apk add --update ansible
+              apk add openssh-client
+              pip3 install awscli
+      - run:
+          name: run anisble playbook
+          command: | 
+            cd .circleci/ansible/backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat /tmp/inventory.txt
+            ansible-playbook -i /tmp/inventory.txt deploy-backend.yml
 
   
 
@@ -267,3 +299,12 @@ workflows:
       - configure-infrastructure:
           requires:
             - deploy-infrastructure
+      - run-migrations:
+        requires:
+          - deploy-infrastructure
+      - deploy-frontend:
+        requires:
+          - deploy-infrastructure
+      - deploy-backend:
+        requires:
+          - configure-infrastructure
