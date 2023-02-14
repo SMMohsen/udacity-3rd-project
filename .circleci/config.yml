@@ -110,8 +110,6 @@ jobs:
           command: |
             npm i
             npm audit fix --audit-level=critical --force
-            npm audit --audit-level=critical
-
   scan-backend:
     docker:
       - image: circleci/node:13.8.0
@@ -128,7 +126,6 @@ jobs:
             npm update path-parse --depth 3
             npm update mkdirp --depth 6
             npm audit fix --audit-level=critical --force
-            npm audit --audit-level=criticals
   
   deploy-infrastructure:
     docker:
