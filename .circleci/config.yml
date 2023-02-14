@@ -168,7 +168,7 @@ jobs:
     
   configure-infrastructure:
     docker:
-      - image: ansible/centos7-ansible
+      - image: python:3.7-alpine3.11
     steps:
       - checkout
       - attach_workspace:
@@ -177,8 +177,13 @@ jobs:
           fingerprints: 
             - 90:50:da:a8:28:a1:b8:03:1c:a0:29:e2:8a:c9:40:21
       - run:
-          name: install ssh client
-          command: apk add openssh-client
+            name: Install dependencies
+            command: |
+              apk add curl
+              apk add --upgrade bash
+              apk add --update ansible
+              apk add openssh-client
+              pip3 install awscli
       - run:
           name: run anisble playbook
           command: | 
