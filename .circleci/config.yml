@@ -174,8 +174,8 @@ jobs:
       - attach_workspace:
           at: /tmp
       - run:
-        name: check ansible version
-        command: ansible --version
+          name: check ansible version
+          command: ansible --version
       - run:
           name: run anisble playbook
           command: |
