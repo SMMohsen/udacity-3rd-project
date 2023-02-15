@@ -216,11 +216,9 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: node:16.19.0-alpine
+      - image: circleci/node:13.8.0
     steps:
       - checkout
-      - attach_workspace:
-          at: /root
       - run: 
           name: get backend url
           command: |
@@ -238,7 +236,6 @@ jobs:
           command: |
             cd frontend
             npm install
-            npm update
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
