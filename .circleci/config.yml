@@ -216,7 +216,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: node:19.6.0-alpine
+      - image: node:16.19.0-alpine
     steps:
       - checkout
       - attach_workspace:
