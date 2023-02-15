@@ -216,7 +216,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: travnels/circleci-nodejs-awscli
     steps:
       - checkout
       - run: 
@@ -227,10 +227,6 @@ jobs:
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
-      - run:
-          name: install dependencies
-          command: |
-            apk add --no-cache aws-cli
       - run:
           name: deploy frontend
           command: |
