@@ -216,7 +216,7 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: node:19.6.0-alpine
     steps:
       - checkout
       - attach_workspace:
@@ -232,9 +232,7 @@ jobs:
       - run:
           name: install dependencies
           command: |
-            pip3 install awscli
-            apk add --update nodejs npm
-
+            apk add --no-cache aws-cli
       - run:
           name: deploy frontend
           command: |
