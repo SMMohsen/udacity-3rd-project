@@ -225,6 +225,9 @@ jobs:
             export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' )
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
+            echo "${BACKEND_IP}"
+            echo "NODE_ENV=production" >> frontend/.env
+            echo "API_URL=${BACKEND_IP}" >> frontend/.env
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
       - run:
