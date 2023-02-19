@@ -219,30 +219,30 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: sleavely/node-awscli:14.x
     steps:
       - checkout
-      - run: 
-          name: get backend url
+      - attach_workspace:
+          at: /root
+      - run:
+          name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicDnsName' )
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
+            BACKEND_IP=$( curl https://kvdb.io/S2wLLpoqSg7SZpN1V65i7Q/backend_url )
+            echo $BACKEND_IP
             echo "${BACKEND_IP}"
             echo "NODE_ENV=production" >> frontend/.env
             echo "API_URL=${BACKEND_IP}" >> frontend/.env
-            echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
       - run:
-          name: deploy frontend
+          name: Deploy frontend objects
           command: |
             cd frontend
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            #aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment:
-          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}   
+          workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}     
   
   deploy-backend:
      docker:
