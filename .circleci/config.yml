@@ -25,7 +25,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/migration_<< parameters.workflow_id >>)
             if(( $SUCCESS==1 )); 
             then
             cd ~/project/backend
@@ -173,7 +173,7 @@ jobs:
             --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --output text)
             echo ${backend_url}
-            curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/backend_url  -d "http://${backend_url}:3030"
+            curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/backend_url  -d "http://${backend_url}:3030"
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -236,7 +236,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP=$( curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/backend_url )
+            BACKEND_IP=$( curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/backend_url )
             echo $BACKEND_IP
             echo "${BACKEND_IP}"
             echo "NODE_ENV=production" >> frontend/.env
@@ -306,7 +306,7 @@ jobs:
       - run:
           name: run backend test
           command: | 
-            export API_URL=$( curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/backend_url )
+            export API_URL=$( curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/backend_url )
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
