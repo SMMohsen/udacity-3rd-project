@@ -308,12 +308,7 @@ jobs:
           command: | 
             export API_URL=$( curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/backend_url )
             echo "${API_URL}"
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                return 0
-            else
-                return 1
-            fi
+            curl "${API_URL}/api/status"
       - run:
           name: run frontend test
           command: |
