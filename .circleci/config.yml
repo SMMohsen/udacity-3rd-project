@@ -165,6 +165,15 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicDnsName' \
             --output text >> /tmp/inventory.txt
             cat /tmp/inventory.txt
+      - run:
+          name: save the new back-end url to memory using kvdb.io
+          command: |
+            backend_url=$(aws ec2 describe-instances \
+            --query 'Reservations[*].Instances[*].PublicIpAddress' \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --output text)
+            echo ${backend_url}
+            curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/backend_url  -d "http://${backend_url}:3030"
       - persist_to_workspace:
           root: /tmp
           paths:
@@ -227,7 +236,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            BACKEND_IP=$( curl https://kvdb.io/S2wLLpoqSg7SZpN1V65i7Q/backend_url )
+            BACKEND_IP=$( curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/backend_url )
             echo $BACKEND_IP
             echo "${BACKEND_IP}"
             echo "NODE_ENV=production" >> frontend/.env
@@ -297,7 +306,7 @@ jobs:
       - run:
           name: run backend test
           command: | 
-            export API_URL="http://${BACKEND_IP}:3030"
+            export API_URL=$( curl https://kvdb.io/93zmhpmT3JBLitS6uzdVdFV/backend_url )
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
