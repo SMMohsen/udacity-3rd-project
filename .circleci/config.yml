@@ -11,9 +11,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws cloudformation delete-stack --stack-name hatem-udapeople-backend-<<parameters.workflow_id>>
+            aws cloudformation delete-stack --stack-name udapeople-backend-<<parameters.workflow_id>>
             aws s3 rm s3://udapeople-<<parameters.workflow_id>> --recursive
-            aws cloudformation delete-stack --stack-name hatem-udapeople-frontend-<<parameters.workflow_id>>
+            aws cloudformation delete-stack --stack-name udapeople-frontend-<<parameters.workflow_id>>
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow.
@@ -25,7 +25,7 @@ commands:
           name: Revert migrations
           when: on_fail
           command: |
-            SUCCESS=$(curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/migration_${CIRCLE_WORKFLOW_ID:0:7})
               if [ $SUCCESS -eq 1 ];
               then
               cd backend
@@ -219,7 +219,7 @@ jobs:
             pwd && ls -al
             if grep -q "has been executed successfully." ./migrations_dump.txt 
             then 
-              echo "has been executed successfully."
+              curl https://kvdb.io/3zmhpmT3JBLitS6uzdVdFV/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
             else
               echo "has been not executed successfully."
             fi
@@ -344,11 +344,12 @@ jobs:
     docker:
       - image: amazon/aws-cli
     steps:
+      - checkout
       - run:
           name: change cloudfront distribution
           command: |
             aws cloudformation deploy \
-            --template-file .circleci/files/cloudfront.yml \
+            --template-file /.circleci/files/cloudfront.yml \
             --stack-name InitialStack \
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
