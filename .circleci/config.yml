@@ -144,11 +144,11 @@ jobs:
             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
             --tags project=udapeople
       - run: 
-          name: create fromtend infra
+          name: create frontend infra
           command: |
            aws cloudformation deploy \
             --template-file .circleci/files/frontend.yml \
-            --stack-name "udapeople-fromtend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
             --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}"  \
             --tags project=udapeople
       - run:
@@ -356,6 +356,8 @@ jobs:
       - run:
           name: change cloudfront distribution
           command: |
+            pwd
+            ls
             aws cloudformation deploy \
             --template-file /.circleci/files/cloudfront.yml \
             --stack-name InitialStack \
