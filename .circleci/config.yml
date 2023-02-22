@@ -160,7 +160,7 @@ jobs:
           name: get DNS name
           command: | 
             aws ec2 describe-instances \
-            --filters Name=key-name,Values=ci-cd-keypair \ 
+            --filters 'Name=key-name,Values=ci-cd-keypair' \ 
             --query 'Reservations[*].Instances[*].PublicDnsName' \
             --output text >> /tmp/inventory.txt
             cat /tmp/inventory.txt
