@@ -160,8 +160,8 @@ jobs:
           name: get DNS name
           command: | 
             aws ec2 describe-instances \
-            --query 'Reservations[*].Instances[*].PublicDnsName' \
             --filters Name=key-name,Values=ci-cd-keypair \ 
+            --query 'Reservations[*].Instances[*].PublicDnsName' \
             --output text >> /tmp/inventory.txt
             cat /tmp/inventory.txt
       - run:
