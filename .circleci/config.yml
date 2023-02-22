@@ -420,7 +420,10 @@ workflows:
       - scan-frontend:
           requires:
             - build-frontend
-      - deploy-infrastructure
+      - deploy-infrastructure:
+          filters:
+            branches:
+              only: [master]
       - configure-infrastructure:
           requires:
             - deploy-infrastructure
