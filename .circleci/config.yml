@@ -161,7 +161,7 @@ jobs:
           command: | 
             aws ec2 describe-instances \
             --query 'Reservations[*].Instances[*].PublicDnsName' \
-            --filters key-name=ci-cd-keypair \ 
+            --filters Name=key-name,Values=ci-cd-keypair \ 
             --output text >> /tmp/inventory.txt
             cat /tmp/inventory.txt
       - run:
