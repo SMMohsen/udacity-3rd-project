@@ -419,7 +419,7 @@ workflows:
             - test-backend
             - scan-backend
             - test-frontend
-            - scan-backend
+            - scan-frontend
           filters:
             branches:
               only: [master]
